@@ -76,7 +76,7 @@ const TableOfContents = ({ data }) => {
     const nested = buildTree(data);
 
     return (
-        <nav className="bg-stone-200 rounded-lg mx-4 flex flex-col w-max px-3 overflow-x-scroll shrink-0 no-scrollbar absolute sm:static top-20">
+        <nav className="bg-gray-100/80 sm:bg-gray-100 dark:bg-zinc-900 dark:sm:bg-zinc-900 rounded-lg mx-4 flex flex-col w-max px-3 overflow-x-scroll shrink-0 no-scrollbar absolute sm:static top-20">
             <h2 className="text-xl font-semibold my-4 text-center">
                 Table of Contents
             </h2>
