@@ -8,7 +8,7 @@ const slugify = (text) =>
         .replace(/[^\w ]+/g, "")
         .replace(/ +/g, "-");
 
-        
+
 function App() {
     const [tableData, setTableData] = useState([]);
 
@@ -18,13 +18,13 @@ function App() {
     }, [tableData]);
 
     return (
-        <div className="h-dvh p-2 ">
-            <div className="rounded-xl flex flex-col h-full gap-3 bg-stone-100 overflow-auto">
+        <div className="h-screen p-2 ">
+            <div className="rounded-xl flex flex-col h-full gap-3 bg-stone-500 overflow-auto">
                 <h1 className="text-4xl text-center">React.js</h1>
                 <div className="flex h-full">
                     <TableOfContents data={tableData} />
 
-                    <div className="bg-stone-200 p-3 rounded-lg overflow-scroll">
+                    <div className="bg-stone-200 p-3 rounded-lg h-162 overflow-scroll">
                         <ol>
                             {tableData.map((x,i) => (
                                 <div className="mb-3 h-full overflow-auto" key={i}>
