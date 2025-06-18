@@ -43,6 +43,7 @@ function ToCItem({ item }) {
                 <a
                     href={`#${item.id}`}
                     className="hover:underline hover:text-blue-500 block py-1 flex-1"
+                    onClick={() => setIsOpen(true)}
                 >
                     {item.text}
                 </a>
@@ -75,13 +76,33 @@ const TableOfContents = ({ data }) => {
     const nested = buildTree(data);
 
     return (
-        <nav className="bg-stone-300 rounded-lg mx-4 flex flex-col w-7xl pl-3 overflow-x-scroll">
+        <nav className="bg-stone-200 rounded-lg mx-4 flex flex-col w-max pl-3 overflow-x-scroll shrink-0">
             <h2 className="text-xl font-semibold my-4 text-center">
                 Table of Contents
             </h2>
-            <ul className="list-disc">
+            <ul
+                className="list-disc"
+                onClick={(e) => {
+                    const target = e.target;
+                    if (target.tagName === "A") {
+                        e.preventDefault(); // <- add this line
+                        const id = target
+                            .getAttribute("href")
+                            ?.replace("#", "");
+                        const element = document.getElementById(String(id));
+                        element?.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start",
+                        });
+                    }
+                }}
+            >
                 {nested.map((item) => (
-                    <ToCItem key={item.id} item={item} />
+                    <ToCItem
+                        key={item.id}
+                        item={item}
+                        href={slugify(item.text)}
+                    />
                 ))}
             </ul>
         </nav>
