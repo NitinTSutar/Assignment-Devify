@@ -12,16 +12,16 @@ function App() {
     }, [tableData]);
 
     return (
-        <div>
-            <div className="m-2 rounded-xl flex flex-col  gap-3 bg-stone-600 h-dvh overflow-clip">
+        <div className="h-dvh p-2 ">
+            <div className="rounded-xl flex flex-col h-full gap-3 bg-stone-400 overflow-auto">
                 <h1 className="text-4xl text-center">React.js</h1>
-                <div className="flex">
+                <div className="flex h-full">
                     <TableOfContents data={tableData} />
 
-                    <div className="h-dvh overflow-x-scroll scroll-smooth">
+                    <div className=" overflow-scroll">
                         <ol>
                             {tableData.map((x) => (
-                                <div className="mt-3">
+                                <div className="mb-3 h-full overflow-auto">
                                     <li className="text-blue-500">{x.text}</li>
                                     <p>{x.content}</p>
                                 </div>

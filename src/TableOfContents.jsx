@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 // Utility to generate slugified text
 const slugify = (text) =>
@@ -35,15 +35,32 @@ function buildTree(headings) {
 }
 
 function ToCItem({ item }) {
+    const [isOpen, setIsOpen] = useState(false);
+
     return (
         <li className="ml-4">
-            <a
-                href={`${item.id}`}
-                className=" hover:underline hover:text-blue-500 block py-1 "
-            >
-                {item.text}
-            </a>
-            {item.children.length > 0 && (
+            <div className="flex justify-between items-center pr-2">
+                <a
+                    href={`#${item.id}`}
+                    className="hover:underline hover:text-blue-500 block py-1 flex-1"
+                >
+                    {item.text}
+                </a>
+
+                {item.children.length > 0 && (
+                    <button
+                        onClick={() => setIsOpen(!isOpen)}
+                        className="ml-2 text-gray-600 hover:text-black"
+                        aria-label={
+                            isOpen ? "Collapse section" : "Expand section"
+                        }
+                    >
+                        {isOpen ? "^" : "+"}
+                    </button>
+                )}
+            </div>
+
+            {item.children.length > 0 && isOpen && (
                 <ul className="ml-4 border-l border-gray-300 pl-2 list-disc">
                     {item.children.map((child) => (
                         <ToCItem key={child.id} item={child} />
