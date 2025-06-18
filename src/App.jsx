@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { headings } from "./data/dummyData";
-import TableOfContents from "./tableOfContents";
+import TableOfContents from "./TableOfContents";
 
 const slugify = (text) =>
     text
