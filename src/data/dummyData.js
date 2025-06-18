@@ -1,0 +1,16 @@
+export const headings = [
+  { level: 1, text: "Getting Started" },
+  { level: 2, text: "Installation" },
+  { level: 2, text: "Project Structure" },
+  { level: 3, text: "Folder Breakdown" },
+  { level: 3, text: "File Naming Conventions" },
+  { level: 1, text: "Core Concepts" },
+  { level: 2, text: "Components" },
+  { level: 3, text: "Functional Components" },
+  { level: 3, text: "Class Components" },
+  { level: 2, text: "Props and State" },
+  { level: 1, text: "Advanced Topics" },
+  { level: 2, text: "Hooks" },
+  { level: 3, text: "useEffect vs useLayoutEffect" },
+  { level: 4, text: "Best Practices" },
+];
