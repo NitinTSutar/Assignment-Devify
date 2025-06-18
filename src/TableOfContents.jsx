@@ -1,3 +1,4 @@
+import { PanelBottomClose, PanelBottomOpen } from "lucide-react";
 import React, { useState } from "react";
 
 // Utility to generate slugified text
@@ -34,15 +35,16 @@ function buildTree(headings) {
     return root;
 }
 
-function ToCItem({ item }) {
+function ToCItem({ item, activeId }) {
     const [isOpen, setIsOpen] = useState(false);
+    const isActive = activeId === item.id;
 
     return (
-        <li className="ml-4">
+        <li className={`ml-4 ${isActive ? "font-bold text-blue-600 dark:text-amber-400" : ""}`}>
             <div className="flex justify-between items-center pr-2">
                 <a
                     href={`#${item.id}`}
-                    className="hover:underline hover:text-blue-500 block py-1 flex-1"
+                    className={`hover:underline block py-1 flex-1 ${isActive ? "text-blue-600 dark:text-amber-400" : ""}`}
                     onClick={() => setIsOpen(true)}
                 >
                     {item.text}
@@ -51,20 +53,20 @@ function ToCItem({ item }) {
                 {item.children.length > 0 && (
                     <button
                         onClick={() => setIsOpen(!isOpen)}
-                        className="ml-2 text-gray-600 hover:text-black"
+                        className="ml-2 text-gray-600 hover:text-black dark:hover:text-white"
                         aria-label={
                             isOpen ? "Collapse section" : "Expand section"
                         }
                     >
-                        {isOpen ? "^" : "+"}
+                        {isOpen ? <PanelBottomOpen size={20} /> : <PanelBottomClose size={20} />}
                     </button>
                 )}
             </div>
 
             {item.children.length > 0 && isOpen && (
-                <ul className="ml-4 border-l border-gray-300 pl-2 list-disc">
+                <ul className="ml-4 border-l border-gray-300 dark:border-gray-700 pl-2 list-disc">
                     {item.children.map((child) => (
-                        <ToCItem key={child.id} item={child} />
+                        <ToCItem key={child.id} item={child} activeId={activeId} />
                     ))}
                 </ul>
             )}
@@ -72,11 +74,11 @@ function ToCItem({ item }) {
     );
 }
 
-const TableOfContents = ({ data }) => {
+const TableOfContents = ({ data, activeId }) => {
     const nested = buildTree(data);
 
     return (
-        <nav className="bg-gray-100/80 sm:bg-gray-100 dark:bg-zinc-900 dark:sm:bg-zinc-900 rounded-lg mx-4 flex flex-col w-max px-3 overflow-x-scroll shrink-0 no-scrollbar absolute sm:static top-20">
+        <nav className="bg-gray-200/80 sm:bg-gray-200 dark:bg-zinc-950/90 dark:sm:bg-zinc-900 rounded-lg mx-4 flex flex-col w-max px-3 overflow-x-scroll shrink-0 no-scrollbar absolute sm:static top-20">
             <h2 className="text-xl font-semibold my-4 text-center">
                 Table of Contents
             </h2>
@@ -101,7 +103,7 @@ const TableOfContents = ({ data }) => {
                     <ToCItem
                         key={item.id}
                         item={item}
-                        href={slugify(item.text)}
+                        activeId={activeId}
                     />
                 ))}
             </ul>

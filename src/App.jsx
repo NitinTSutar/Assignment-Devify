@@ -13,6 +13,7 @@ function App() {
     const [tableData, setTableData] = useState([]);
     const [visibility, setVisibitliy] = useState(true);
     const [darkMode, setDarkMode] = useState(false);
+    const [activeId, setActiveId] = useState(null);
 
     useEffect(() => {
         const data = headings;
@@ -27,47 +28,64 @@ function App() {
         }
     }, [darkMode]);
 
-    return (
-        <div className="h-screen bg-stone-100 dark:bg-zinc-800 p-2 ">
-            <div className=" rounded-xl flex flex-col gap-3 h-full bg-stone-100 dark:bg-zinc-900 text-gray-900 dark:text-gray-100 overflow-auto">
-                <div
-                        className="absolute m-4 sm:hidden"
-                        onClick={() => setVisibitliy(!visibility)}
-                    >
-                        <AlignJustify />
-                    </div>
-                    <div
-                        className="absolute right-8 top-5"
-                        onClick={() => setDarkMode(!darkMode)}
-                    >
-                        {!darkMode && <Sun />}
-                        {darkMode && <Moon />}
-                    </div>
-                <h1 className="text-4xl text-gray-800 dark:text-gray-100 text-center">
-                    
-                    React.js
-                </h1>
-                <div className="flex h-[91%]">
-                    {visibility && <TableOfContents data={tableData} />}
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        setActiveId(id);
+                        window.history.replaceState(null, "", `#${id}`);
+                    }
+                });
+            },
+            {
+                rootMargin: "0px 0px -70% 0px",
+                threshold: 0.1,
+            }
+        );
 
-                    <div className="bg-gray-100 dark:bg-zinc-900 ml-4 sm:ml-0 p-3 lg:px-20 mr-4 rounded-lg h-full overflow-scroll no-scrollbar">
-                        <ol>
-                            {tableData.map((x, i) => (
-                                <div
-                                    className="mb-3 h-full overflow-auto "
-                                    key={i}
+        const elements = document.querySelectorAll("li[id]");
+        elements.forEach((el) => observer.observe(el));
+
+        return () => observer.disconnect();
+    }, [tableData]);
+
+    return (
+        <div className=" flex flex-col gap-3 h-screen bg-stone-100  dark:bg-zinc-900 text-gray-900 dark:text-gray-100 overflow-auto">
+            <div
+                className="absolute m-4 sm:hidden"
+                onClick={() => setVisibitliy(!visibility)}
+            >
+                <AlignJustify />
+            </div>
+            <div
+                className="absolute right-8 top-5"
+                onClick={() => setDarkMode(!darkMode)}
+            >
+                {!darkMode ? <Sun /> : <Moon />}
+                
+            </div>
+            <h1 className="text-4xl text-gray-800 font-extrabold dark:text-gray-100 text-center">
+                React.js
+            </h1>
+            <div className="flex h-[91%]">
+                {visibility && <TableOfContents data={tableData} activeId={activeId} />}
+
+                <div className="bg-gray-200 dark:bg-zinc-900 ml-4 sm:ml-0 p-3 lg:px-20 mr-4 rounded-lg h-full overflow-scroll no-scrollbar">
+                    <ol>
+                        {tableData.map((x, i) => (
+                            <div className="mb-3 h-full overflow-auto " key={i}>
+                                <li
+                                    id={slugify(x.text)}
+                                    className="text-amber-700 text-xl "
                                 >
-                                    <li
-                                        id={slugify(x.text)}
-                                        className="text-amber-700 text-xl"
-                                    >
-                                        {x.text}
-                                    </li>
-                                    <p>{x.content}</p>
-                                </div>
-                            ))}
-                        </ol>
-                    </div>
+                                    {x.text}
+                                </li>
+                                <p>{x.content}</p>
+                            </div>
+                        ))}
+                    </ol>
                 </div>
             </div>
         </div>
