@@ -1,5 +1,6 @@
 import { PanelBottomClose, PanelBottomOpen } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { AnimatePresence, motion } from "motion/react";
 
 // Utility to generate slugified text
 const slugify = (text) =>
@@ -35,79 +36,127 @@ function buildTree(headings) {
     return root;
 }
 
+const liVariants = {
+    hidden: { opacity: 0, y: -10 },
+    visible: { opacity: 1, y: 0 },
+};
+
 function ToCItem({ item, activeId }) {
     const [isOpen, setIsOpen] = useState(false);
     const isActive = activeId === item.id;
 
     return (
-        <li className={`ml-4 ${isActive ? "font-bold text-blue-600 dark:text-amber-400" : ""}`}>
+        <motion.li
+            variants={liVariants}
+            initial="hidden"
+            animate="visible"
+            transition={{ duration: 0.3 }}
+            className={`ml-4 ${
+                isActive
+                    ? "text-blue-600 dark:text-amber-400 font-semibold"
+                    : ""
+            }`}
+        >
             <div className="flex justify-between items-center pr-2">
-                <a
+                <motion.a
                     href={`#${item.id}`}
-                    className={`hover:underline block py-1 flex-1 ${isActive ? "text-blue-600 dark:text-amber-400" : ""}`}
+                    whileHover={{ scale: 1.05 }}
+                    className={`block py-1 flex-1 ${
+                        isActive ? "text-blue-600 dark:text-amber-400" : ""
+                    }`}
                     onClick={() => setIsOpen(true)}
                 >
                     {item.text}
-                </a>
+                </motion.a>
 
                 {item.children.length > 0 && (
-                    <button
+                    <motion.button
+                        whileHover={{ scale: 1.1 }}
                         onClick={() => setIsOpen(!isOpen)}
-                        className="ml-2 text-gray-600 hover:text-black dark:hover:text-white"
+                        className="ml-2 text-gray-800 dark:text-gray-400"
                         aria-label={
                             isOpen ? "Collapse section" : "Expand section"
                         }
                     >
-                        {isOpen ? <PanelBottomOpen size={20} /> : <PanelBottomClose size={20} />}
-                    </button>
+                        {isOpen ? (
+                            <PanelBottomOpen size={20} />
+                        ) : (
+                            <PanelBottomClose size={20} />
+                        )}
+                    </motion.button>
                 )}
             </div>
 
-            {item.children.length > 0 && isOpen && (
-                <ul className="ml-4 border-l border-gray-300 dark:border-gray-700 pl-2 list-disc">
-                    {item.children.map((child) => (
-                        <ToCItem key={child.id} item={child} activeId={activeId} />
-                    ))}
-                </ul>
+            {item.children.length > 0 && (
+                <AnimatePresence>
+                    {isOpen && (
+                        <motion.ul
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ staggerChildren: 0.1 }}
+                            className="ml-4 border-l border-gray-300 dark:border-gray-700 pl-2 list-disc"
+                        >
+                            {item.children.map((child) => (
+                                <ToCItem
+                                    key={child.id}
+                                    item={child}
+                                    activeId={activeId}
+                                />
+                            ))}
+                        </motion.ul>
+                    )}
+                </AnimatePresence>
             )}
-        </li>
+        </motion.li>
     );
 }
 
 const TableOfContents = ({ data, activeId }) => {
     const nested = buildTree(data);
 
+    useEffect(() => {
+        const tocLinks = document.querySelectorAll("nav a[href^='#']");
+        tocLinks.forEach((link) => {
+            link.addEventListener("click", (e) => {
+                e.preventDefault();
+                const id = link.getAttribute("href").substring(1);
+                const element = document.getElementById(id);
+                element?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                });
+            });
+        });
+        return () => {
+            tocLinks.forEach((link) => {
+                link.removeEventListener("click", () => {});
+            });
+        };
+    }, [data]);
+
     return (
-        <nav className="bg-gray-200/80 sm:bg-gray-200 dark:bg-zinc-950/90 dark:sm:bg-zinc-900 rounded-lg mx-4 flex flex-col w-max px-3 overflow-x-scroll shrink-0 no-scrollbar absolute sm:static top-20">
-            <h2 className="text-xl font-semibold my-4 text-center">
-                Table of Contents
-            </h2>
-            <ul
-                className="list-disc"
-                onClick={(e) => {
-                    const target = e.target;
-                    if (target.tagName === "A") {
-                        e.preventDefault(); // <- add this line
-                        const id = target
-                            .getAttribute("href")
-                            ?.replace("#", "");
-                        const element = document.getElementById(String(id));
-                        element?.scrollIntoView({
-                            behavior: "smooth",
-                            block: "start",
-                        });
-                    }
-                }}
-            >
-                {nested.map((item) => (
-                    <ToCItem
-                        key={item.id}
-                        item={item}
-                        activeId={activeId}
-                    />
-                ))}
-            </ul>
-        </nav>
+        <motion.div
+            animate={{
+                x: [-100, 0],
+            }}
+            exit={{ x: [0, -100] }}
+        >
+            <nav className="bg-blue-100/90 sm:bg-gray-200 dark:bg-zinc-950/90 dark:sm:bg-zinc-950 rounded-lg mx-4 flex sm:h-full flex-col w-3xs px-3 overflow-x-scroll border-1 border-dashed sm:border-0 shrink-0 no-scrollbar absolute sm:static top-12 transition-colors duration-300 ease-in">
+                <h2 className="text-xl font-semibold my-4 text-center">
+                    Table of Contents
+                </h2>
+                <ul className="list-disc">
+                    {nested.map((item) => (
+                        <ToCItem
+                            key={item.id}
+                            item={item}
+                            activeId={activeId}
+                        />
+                    ))}
+                </ul>
+            </nav>
+        </motion.div>
     );
 };
 
