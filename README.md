@@ -75,7 +75,7 @@ Below are some screenshots of the app in action:
 <div style="display: flex; gap: 10px; align-items: flex-start;">
   <img src="./screenshots/mobile-lightmode.png" alt="Table of Contents Light - Small Screen" height="450"/>
   <img src="./screenshots/mobile-darkmode.png" alt="Table of Contents Dark - Small Screen" height="450"/>
-  <img src="./screenshots/mobile-darkmode-Toc_open.png" alt="Table of Contents Dark - Small Screen ToC Open" height="450"/>
+  <img src="./screenshots/mobile-darkmode-ToC_open.png" alt="Table of Contents Dark - Small Screen ToC Open" height="450"/>
   
 </div>
 
