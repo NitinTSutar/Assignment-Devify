@@ -2,26 +2,43 @@ import { useEffect, useState } from "react";
 import { headings } from "./data/dummyData";
 import TableOfContents from "./TableOfContents";
 import { AlignJustify, Moon, Sun } from "lucide-react";
-import { easeIn, easeInOut, motion } from "motion/react"
+import { motion } from "motion/react";
+import useSlugify from "./hooks/useSlugify";
 
-const slugify = (text) =>
-    text
-        .toLowerCase()
-        .replace(/[^\w ]+/g, "")
-        .replace(/ +/g, "-");
-
-function App() {
+const App = () => {
     const [tableData, setTableData] = useState([]);
-    const [visibility, setVisibitliy] = useState(true);
-    const [darkMode, setDarkMode] = useState(false);
+    const [visibility, setVisibility] = useState(true);
+    const [darkMode, setDarkMode] = useState(() => {
+        const storedMode = localStorage.getItem("darkMode"); //*getting value of darkMode from localstroage
+        return storedMode !== null ? JSON.parse(storedMode) : false;
+    });
     const [activeId, setActiveId] = useState(null);
+    const slugify = useSlugify();
+
+    useEffect(() => {
+        //* setting visibility of ToC to true for wide screens and false for mobile screen
+        function handleResize() {
+            if (window.innerWidth >= 640) {
+                setVisibility(true);
+            } else {
+                setVisibility(false);
+            }
+        }
+
+        window.addEventListener("resize", handleResize);
+        handleResize();
+
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     useEffect(() => {
         const data = headings;
         setTableData(data);
-    }, [tableData]);
+    }, []);
 
     useEffect(() => {
+        //* Saving darkMode to localStorage.
+        localStorage.setItem("darkMode", JSON.stringify(darkMode));
         if (darkMode) {
             document.documentElement.classList.add("dark");
         } else {
@@ -55,37 +72,22 @@ function App() {
     return (
         <div className="flex flex-col gap-3 h-screen bg-stone-100 dark:bg-zinc-900 text-gray-900 dark:text-gray-100 overflow-auto transition-colors duration-300 ease-in">
             <div
-                className="absolute m-4 sm:hidden"
-                onClick={() => setVisibitliy(!visibility)}
+                className="absolute cursor-pointer m-4 sm:hidden"
+                onClick={() => setVisibility(!visibility)}
             >
                 <AlignJustify />
             </div>
             <motion.div
-                className="absolute right-8 top-5"
+                className="absolute right-8 top-5 cursor-pointer"
                 onClick={() => setDarkMode(!darkMode)}
-                animate={{
-                    transform: {}
-                }}
             >
-                {!darkMode ? (
-                    <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.95, rotate: 180 }}
-                    >
-                        <Sun />
-                    </motion.button>
-                ) : (
-                    <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.95, rotate: 180 }}
-                        animate={{
-                            transition: { duration: 10 },
-                            ease: easeIn
-                        }}
-                    >
-                        <Moon />
-                    </motion.button>
-                )}
+                <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95, rotate: 180 }}
+                    className="cursor-pointer"
+                >
+                    {darkMode ? <Moon /> : <Sun />}
+                </motion.button>
             </motion.div>
             <motion.h1
                 className="text-4xl text-gray-800 font-extrabold dark:text-gray-100 text-center transition-colors duration-300 ease-in"
@@ -97,7 +99,14 @@ function App() {
             </motion.h1>
             <div className="flex h-[91%]">
                 {visibility && (
-                    <TableOfContents data={tableData} activeId={activeId} />
+                    <TableOfContents
+                        data={tableData}
+                        activeId={activeId}
+                        titleTag="h3"
+                        maxDepth={4}
+                        collapsible={true}
+                        activeClass="text-green-600 dark:text-lime-400"
+                    />
                 )}
 
                 {/* ↓ Added scroll-smooth here ↓ */}
@@ -119,6 +128,6 @@ function App() {
             </div>
         </div>
     );
-}
+};
 
 export default App;
