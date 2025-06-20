@@ -4,6 +4,9 @@ A responsive React app built with Vite that demonstrates a dynamic, collapsible 
 
 ---
 
+## Live Link - https://assignment-devify.netlify.app/
+
+---
 ## 🚀 Features
 
 -   **Dynamic Table of Contents**  
